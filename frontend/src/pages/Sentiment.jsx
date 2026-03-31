@@ -33,14 +33,14 @@ const Sentiment = () => {
     }, [selectedProduct, selectedSource, selectedDateRange]);
 
     return (
-        <div className="min-h-screen bg-bg-primary text-text-primary pb-12 font-sans selection:bg-accent-primary selection:text-white flex flex-col overflow-x-hidden pt-4">
+        <div className="animate-in fade-in duration-500">
             <Filters 
                 product={selectedProduct} setProduct={setSelectedProduct}
                 source={selectedSource} setSource={setSelectedSource}
                 days={selectedDateRange} setDays={setSelectedDateRange}
             />
 
-            <main className="flex-1 w-full max-w-[1600px] mx-auto px-4 md:px-8 mt-6">
+            <main className="mt-8">
                 <div className="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
                     <div>
                         <h2 className="text-3xl font-bold text-text-primary tracking-tight">Sentiment Distribution & Velocity</h2>

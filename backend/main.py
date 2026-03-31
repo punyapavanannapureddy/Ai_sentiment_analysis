@@ -1,6 +1,9 @@
+import logging
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
+from rag.pipeline import rag_query
+from init_db import load_data
 
 from pipeline.consumer_analysis import (
     clean_text,
@@ -10,23 +13,44 @@ from pipeline.consumer_analysis import (
     topic_info_df
 )
 
-# ✅ FIRST create app
+# ── Logging ──────────────────────────────────────────────────────
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+# ── App ──────────────────────────────────────────────────────────
 app = FastAPI(title="AI-Powered Consumer Sentiment Forecaster")
 
-# ✅ THEN add middleware
+# ── CORS ─────────────────────────────────────────────────────────
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=[
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
+        "http://localhost:3000",
+        "http://localhost:8000",
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
+# ── Auto-initialize DB on startup ────────────────────────────────
+@app.on_event("startup")
+async def startup_event():
+    logger.info("🚀 Starting up — checking ChromaDB...")
+    load_data()
+    logger.info("✅ Startup complete.")
+
+
 # -------------------------------
-# REQUEST MODEL
+# REQUEST MODELS
 # -------------------------------
 class PredictRequest(BaseModel):
     text: str
+
+class ChatRequest(BaseModel):
+    query: str
+
 
 # -------------------------------
 # ROOT
@@ -37,6 +61,7 @@ async def root():
         "service": "AI-Powered Consumer Sentiment Forecaster",
         "status": "running"
     }
+
 
 # -------------------------------
 # PREDICT
@@ -59,7 +84,9 @@ async def predict(request: PredictRequest):
         }
 
     except Exception as e:
+        logger.error(f"/predict error: {e}")
         return {"error": str(e)}
+
 
 # -------------------------------
 # TREND INSIGHTS
@@ -88,7 +115,9 @@ async def trend_insights():
         }
 
     except Exception as e:
+        logger.error(f"/trend-insights error: {e}")
         return {"error": str(e)}
+
 
 # -------------------------------
 # DATASET SUMMARY
@@ -112,4 +141,28 @@ async def dataset_summary():
         }
 
     except Exception as e:
+        logger.error(f"/dataset-summary error: {e}")
         return {"error": str(e)}
+
+
+# -------------------------------
+# RAG CHAT
+# -------------------------------
+@app.post("/chat")
+async def chat(request: ChatRequest):
+    try:
+        result = await rag_query(
+            query=request.query,
+            conversation_history=[],
+            product_filter=None,
+            n_retrieve=8
+        )
+
+        return {
+            "answer": result["answer"],
+            "docs_retrieved": result["docs_retrieved"]
+        }
+
+    except Exception as e:
+        logger.error(f"/chat error: {e}")
+        raise HTTPException(status_code=500, detail=f"RAG pipeline error: {str(e)}")

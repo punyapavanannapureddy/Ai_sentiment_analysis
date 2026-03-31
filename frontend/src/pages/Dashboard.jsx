@@ -35,14 +35,14 @@ const Dashboard = () => {
     }, [selectedProduct, selectedSource, selectedDateRange]);
 
     return (
-        <div className="min-h-screen bg-bg-primary text-text-primary pb-12 font-sans selection:bg-accent-primary selection:text-white flex flex-col overflow-x-hidden pt-4">
+        <div className="animate-in fade-in duration-500">
             <Filters 
                 product={selectedProduct} setProduct={setSelectedProduct}
                 source={selectedSource} setSource={setSelectedSource}
                 days={selectedDateRange} setDays={setSelectedDateRange}
             />
 
-            <main className="flex-1 w-full max-w-[1600px] mx-auto">
+            <main className="mt-8">
                 {loading ? (
                     <div className="flex flex-col items-center justify-center min-h-[500px] space-y-4">
                         <Loader2 className="w-12 h-12 text-accent-primary animate-spin" />
@@ -57,7 +57,7 @@ const Dashboard = () => {
                 ) : (
                     <div className="space-y-6 pt-6 animate-in fade-in duration-700">
                         {/* Dynamic Header & Insight Summary */}
-                        <div className="px-4 md:px-8 mb-6">
+                        <div className="mb-6">
                             <h2 className="text-2xl font-black text-text-primary tracking-tight mb-2">
                                 {selectedProduct} Sentiment Analysis <span className="text-text-secondary font-medium">({selectedSource} • Last {selectedDateRange === '7' ? '7' : selectedDateRange === '30' ? '30' : '90'} Days)</span>
                             </h2>
@@ -70,7 +70,7 @@ const Dashboard = () => {
                         <KPICards kpi={dashboardData.kpi} />
 
                         {/* Top Core Visuals */}
-                        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 px-4 md:px-8">
+                        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
                             <div className="lg:col-span-4 h-[420px]">
                                 <SentimentChart data={dashboardData.distribution} />
                             </div>
@@ -80,7 +80,7 @@ const Dashboard = () => {
                         </div>
 
                         {/* Secondary Insights & Actions */}
-                        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 px-4 md:px-8 pb-8">
+                        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 pb-8">
                             <div className="lg:col-span-3 h-[500px]">
                                 <DownloadButtons 
                                     product={selectedProduct} 

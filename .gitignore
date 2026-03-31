@@ -1,4 +1,4 @@
-]# =========================
+# =========================
 # Logs
 # =========================
 logs
@@ -32,8 +32,9 @@ backend/env/
 # Environment variables
 backend/.env
 
-# ML outputs (VERY IMPORTANT)
-backend/outputs/*.csv
+# ML outputs
+# (CSV tracking enabled. Uncomment the line below to stop tracking new CSVs)
+# backend/outputs/*.csv
 backend/outputs/topic_model/
 
 # =========================
@@ -44,6 +45,8 @@ dist/
 dist-ssr/
 *.local
 .env
+.env.*
+*.env
 
 # =========================
 # Editor / OS files
