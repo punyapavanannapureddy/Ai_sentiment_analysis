@@ -37,9 +37,11 @@ app.add_middleware(
 # ── Auto-initialize DB on startup ────────────────────────────────
 @app.on_event("startup")
 async def startup_event():
-    logger.info("🚀 Starting up — checking ChromaDB...")
-    load_data()
-    logger.info("✅ Startup complete.")
+    import asyncio
+    logger.info("🚀 Starting up — initializing ChromaDB in background...")
+    # Run in background so the port binds immediately
+    asyncio.create_task(asyncio.to_thread(load_data))
+    logger.info("✅ Startup initiated (Background tasks running).")
 
 
 # -------------------------------
