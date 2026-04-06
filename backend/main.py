@@ -41,7 +41,7 @@ async def startup_event():
     import asyncio
     logger.info("🚀 Starting up — initializing ChromaDB in background...")
     
-    async def background_bootstrap():
+    def background_bootstrap():
         import time
         time.sleep(5) # Give the server a few seconds to breathe
         from init_db import load_data
