@@ -1,24 +1,25 @@
 import logging
+import os
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
-from rag.pipeline import rag_query
-from init_db import load_data
-
-from pipeline.consumer_analysis import (
-    clean_text,
-    predict_sentiment_single,
-    predict_topic,
-    df,
-    topic_info_df
-)
 
 # ── Logging ──────────────────────────────────────────────────────
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# ── App ──────────────────────────────────────────────────────────
+# ── App Object (Initialized instantly) ───────────────────────────
 app = FastAPI(title="AI-Powered Consumer Sentiment Forecaster")
+
+# ── Helpers for Lazy Imports ─────────────────────────────────────
+def get_rag_query():
+    from rag.pipeline import rag_query
+    return rag_query
+
+def get_analysis_pipeline():
+    import pipeline.consumer_analysis as analysis
+    return analysis
+
 
 # ── CORS ─────────────────────────────────────────────────────────
 app.add_middleware(
@@ -39,8 +40,13 @@ app.add_middleware(
 async def startup_event():
     import asyncio
     logger.info("🚀 Starting up — initializing ChromaDB in background...")
+    
+    def background_bootstrap():
+        from init_db import load_data
+        load_data()
+        
     # Run in background so the port binds immediately
-    asyncio.create_task(asyncio.to_thread(load_data))
+    asyncio.create_task(asyncio.to_thread(background_bootstrap))
     logger.info("✅ Startup initiated (Background tasks running).")
 
 
@@ -64,20 +70,19 @@ async def root():
         "status": "running"
     }
 
-
 # -------------------------------
 # PREDICT
 # -------------------------------
 @app.post("/predict")
 async def predict(request: PredictRequest):
     try:
+        pipeline = get_analysis_pipeline()
         if not request.text.strip():
             raise HTTPException(status_code=400, detail="Text cannot be empty")
 
-        cleaned = clean_text(request.text)
-
-        sent = predict_sentiment_single(cleaned)
-        _, topic = predict_topic(cleaned)
+        cleaned = pipeline.clean_text(request.text)
+        sent = pipeline.predict_sentiment_single(cleaned)
+        _, topic = pipeline.predict_topic(cleaned)
 
         return {
             "sentiment": sent["sentiment"],
@@ -96,6 +101,10 @@ async def predict(request: PredictRequest):
 @app.get("/trend-insights")
 async def trend_insights():
     try:
+        pipeline = get_analysis_pipeline()
+        df = pipeline.df
+        topic_info_df = pipeline.topic_info_df
+        
         total = len(df)
         counts = df['sentiment_label'].value_counts()
 
@@ -127,6 +136,10 @@ async def trend_insights():
 @app.get("/dataset-summary")
 async def dataset_summary():
     try:
+        pipeline = get_analysis_pipeline()
+        df = pipeline.df
+        topic_info_df = pipeline.topic_info_df
+        
         total = len(df)
         counts = df['sentiment_label'].value_counts()
 
@@ -153,7 +166,8 @@ async def dataset_summary():
 @app.post("/chat")
 async def chat(request: ChatRequest):
     try:
-        result = await rag_query(
+        rag_query_fn = get_rag_query()
+        result = await rag_query_fn(
             query=request.query,
             conversation_history=[],
             product_filter=None,
