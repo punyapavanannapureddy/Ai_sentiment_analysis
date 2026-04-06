@@ -11,8 +11,8 @@ df = pd.read_csv("outputs/sentiment_topic_results.csv")
 topic_info_df = pd.read_csv("outputs/topic_info.csv")
 
 # -------------------------------
-# LOAD MODELS
-# -------------------------------
+import os
+
 print("Loading models...")
 
 sentiment_model = pipeline(
@@ -20,9 +20,16 @@ sentiment_model = pipeline(
     model="cardiffnlp/twitter-roberta-base-sentiment-latest"
 )
 
-topic_model = BERTopic.load("outputs/topic_model")
-
-print("Models loaded successfully!")
+try:
+    if os.path.exists("outputs/topic_model"):
+        topic_model = BERTopic.load("outputs/topic_model")
+        print("Models loaded successfully!")
+    else:
+        topic_model = None
+        print("Warning: outputs/topic_model not found. Topic prediction will be disabled.")
+except Exception as e:
+    topic_model = None
+    print(f"Warning: Failed to load topic_model: {e}")
 
 # -------------------------------
 # CLEAN TEXT
@@ -45,6 +52,9 @@ def predict_sentiment_single(text: str):
 # TOPIC
 # -------------------------------
 def predict_topic(text: str):
+    if topic_model is None:
+        return -1, "Topic Prediction Unavailable"
+
     topics, _ = topic_model.transform([text])
     t_id = topics[0]
 

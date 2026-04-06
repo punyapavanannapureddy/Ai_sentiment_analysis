@@ -60,4 +60,12 @@ Thumbs.db
 *.ntvs*
 *.njsproj
 *.sln
-*.sw?
+# Test scripts and API debug logs
+backend/test_api.py
+backend/test_rag.py
+backend/*.txt
+!backend/requirements.txt
+!backend/models.txt
+backend/out.txt
+backend/stdout.txt
+backend/stderr.txt

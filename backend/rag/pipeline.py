@@ -6,8 +6,13 @@ Production-ready RAG pipeline using Gemini API + ChromaDB
 import time
 import logging
 from typing import List, Dict, Any, Optional
+import warnings
 import os
-import google.generativeai as genai
+
+# Suppress the "import google.generativeai as genai" deprecation warning
+with warnings.catch_warnings():
+    warnings.simplefilter("ignore")
+    import google.generativeai as genai
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -32,7 +37,11 @@ STRICT RULES:
 def generate_answer(system_prompt: str, user_prompt: str, max_retries: int = 3) -> str:
     model = genai.GenerativeModel(
         model_name="gemini-2.5-flash",
-        system_instruction=system_prompt
+        system_instruction=system_prompt,
+        generation_config=genai.types.GenerationConfig(
+            max_output_tokens=150, # Safety step: limit output tokens
+            temperature=0.0
+        )
     )
 
     for attempt in range(max_retries):
@@ -56,7 +65,7 @@ async def rag_query(
     query: str,
     conversation_history: List[Dict[str, str]] = None,
     product_filter: Optional[str] = None,
-    n_retrieve: int = 8,
+    n_retrieve: int = 3, # Safety step: reduced from 8 to limit input tokens
 ) -> Dict[str, Any]:
 
     start_ms = int(time.time() * 1000)

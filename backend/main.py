@@ -155,7 +155,7 @@ async def chat(request: ChatRequest):
             query=request.query,
             conversation_history=[],
             product_filter=None,
-            n_retrieve=8
+            n_retrieve=3 # Safety step: lower retrieval size
         )
 
         return {

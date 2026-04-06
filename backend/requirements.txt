@@ -10,3 +10,6 @@ umap-learn
 hdbscan
 pyngrok
 nest-asyncio
+chromadb
+google-generativeai
+python-dotenv
