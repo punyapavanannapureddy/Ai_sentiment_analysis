@@ -41,7 +41,9 @@ async def startup_event():
     import asyncio
     logger.info("🚀 Starting up — initializing ChromaDB in background...")
     
-    def background_bootstrap():
+    async def background_bootstrap():
+        import time
+        time.sleep(5) # Give the server a few seconds to breathe
         from init_db import load_data
         load_data()
         
@@ -64,7 +66,8 @@ class ChatRequest(BaseModel):
 # ROOT
 # -------------------------------
 @app.get("/")
-async def root():
+@app.get("/health")
+async def health():
     return {
         "service": "AI-Powered Consumer Sentiment Forecaster",
         "status": "running"
