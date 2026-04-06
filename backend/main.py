@@ -74,6 +74,7 @@ async def root():
 # PREDICT
 # -------------------------------
 @app.post("/predict")
+@app.post("/predict/")
 async def predict(request: PredictRequest):
     try:
         pipeline = get_analysis_pipeline()
@@ -99,6 +100,7 @@ async def predict(request: PredictRequest):
 # TREND INSIGHTS
 # -------------------------------
 @app.get("/trend-insights")
+@app.get("/trend-insights/")
 async def trend_insights():
     try:
         pipeline = get_analysis_pipeline()
@@ -134,6 +136,7 @@ async def trend_insights():
 # DATASET SUMMARY
 # -------------------------------
 @app.get("/dataset-summary")
+@app.get("/dataset-summary/")
 async def dataset_summary():
     try:
         pipeline = get_analysis_pipeline()
@@ -164,6 +167,7 @@ async def dataset_summary():
 # RAG CHAT
 # -------------------------------
 @app.post("/chat")
+@app.post("/chat/")
 async def chat(request: ChatRequest):
     try:
         rag_query_fn = get_rag_query()
