@@ -14,7 +14,8 @@ const Navbar = () => {
     };
 
     return (
-        <header className="h-16 bg-bg-primary/80 backdrop-blur-md border-b border-border-dark fixed top-0 lg:left-64 left-0 right-0 z-10 flex items-center justify-end px-6 shadow-sm">
+        <header className="h-16 bg-bg-secondary/80 backdrop-blur-md border-b border-border-dark fixed top-0 lg:left-64 left-0 right-0 z-20 flex items-center justify-between px-6 shadow-sm">
+            <h1 className="text-lg md:text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-accent-primary to-accent-secondary hidden sm:block">Consumer Sentiment Dashboard</h1>
             <div className="flex items-center space-x-6">
                 <div className="relative hidden lg:block">
                     <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-secondary" />
