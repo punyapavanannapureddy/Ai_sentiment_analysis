@@ -6,7 +6,7 @@ const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
 const client = axios.create({
     baseURL: BASE_URL,
-    timeout: 60000, // ✅ Generous timeout for slow GenAI responses
+    timeout: 300000, // ✅ 5-minute timeout because Render Free Tier can take incredibly long to spin up or build
     headers: {
         'ngrok-skip-browser-warning': 'true'
     }
@@ -229,8 +229,8 @@ export const getRAGResponse = async (query) => {
         const res = await client.post('/chat', { query });
         return { query, response: res.data.answer || "No response generated." };
     } catch (error) {
-        console.error("Chat API failed", error.message);
-        return { query, response: "Error: Unable to connect to the intelligence engine." };
+        console.error("Chat API failed", error);
+        return { query, response: `Error: Unable to connect to the intelligence engine. Details: ${error.message}` };
     }
 };
 
