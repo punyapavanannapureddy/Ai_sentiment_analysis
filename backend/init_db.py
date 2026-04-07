@@ -50,8 +50,8 @@ def load_data():
             }
         })
 
-    # Limit for performance — Render free tier is slow, 1000 is safer for boot
-    docs = docs[:1000]
+    # Limit for performance — Render free tier is slow, 100 is safer for boot
+    docs = docs[:100]
 
     if not docs:
         logger.warning("No valid documents found in CSV.")
