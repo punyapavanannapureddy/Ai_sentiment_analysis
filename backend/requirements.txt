@@ -1,0 +1,12 @@
+fastapi
+uvicorn
+pandas
+transformers
+sentence-transformers
+bertopic
+torch
+scikit-learn
+umap-learn
+hdbscan
+pyngrok
+nest-asyncio
