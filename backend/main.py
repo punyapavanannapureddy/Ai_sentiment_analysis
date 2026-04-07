@@ -27,7 +27,8 @@ app.add_middleware(
     allow_origins=[
         "http://localhost:5173",
         "http://127.0.0.1:5173",
-        "https://ai-sentiment-analysis-dq85zhg9m.vercel.app", # Explicitly add your Vercel frontend
+        "https://ai-sentiment-analysis-five.vercel.app",
+        "https://ai-sentiment-analysis-dq85zhg9m.vercel.app"
     ],
     allow_credentials=True,
 
